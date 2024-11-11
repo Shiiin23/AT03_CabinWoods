@@ -14,11 +14,12 @@ public class DigitalTooltip : InteractableObject
     [SerializeField] private Sprite background;
     [Tooltip("This is the audio clip that will play when notes are opened/closed.")]
     [SerializeField] private AudioClip interactClip;
-    [SerializeField] private AudioClip narrationClip; //i added this
+    [Tooltip("This is the audio clip that will play the narration when you activate the tooltip")]
+    [SerializeField] private AudioClip narrationClip; //Added a serialize field for the narration audio clip - Arvin
 
     private Image imageRenderer; //should be a child of this object
     private GameObject textObject; //should be a child of the image renderer object
-    private GameObject playIndicator;
+    private GameObject playIndicator; //added a game object that should be a child of the tooltip/object and not of the image rendered object - Arvin
     public AudioSource audioSource;
 
     //Awake is executed before the Start method
@@ -37,7 +38,7 @@ public class DigitalTooltip : InteractableObject
         else
         {
             textObject = imageRenderer.GetComponentInChildren<Text>().gameObject;
-            playIndicator = imageRenderer.GetComponentInChildren<Text>().gameObject;
+            playIndicator = GetComponentInChildren<Text>().gameObject; //looks for a children text game object in the tooltip - Arvin
             if (textObject == null)
             {
                 Debug.LogWarning($"{imageRenderer.name} should have a UI Text as a child!");
@@ -57,9 +58,9 @@ public class DigitalTooltip : InteractableObject
         {
             textObject.SetActive(false);
         }
-        if (playIndicator != null)
+        if (playIndicator != null) //this turns off the text game object, playIndicator, at the start - Arvin
         {
-            playIndicator.SetActive(false);
+            playIndicator.SetActive(false); 
         }
     }
 
@@ -87,21 +88,18 @@ public class DigitalTooltip : InteractableObject
             if (imageRenderer != null)
             {
                 imageRenderer.sprite = background;
+                playIndicator.SetActive(true); //turn on playIndicator when the tooltip is activated - Arvin
             }
             if (textObject != null)
             {
                 textObject.SetActive(true);
             }
-            if (playIndicator != null)
-            {
-                playIndicator.SetActive(true);
-            }
             if (audioSource != null && interactClip != null && narrationClip != null)
             {
                 audioSource.PlayOneShot(interactClip);
-                audioSource.clip = narrationClip; //i added this
-                audioSource.PlayDelayed(0.5f); //i added this
-                
+                audioSource.clip = narrationClip; //play the narration clip with a delay of 0.5 seconds - Arvin
+                audioSource.PlayDelayed(0.5f); 
+
             }
 
             return true;
@@ -121,6 +119,7 @@ public class DigitalTooltip : InteractableObject
             if (imageRenderer != null)
             {
                 imageRenderer.sprite = icon;
+                playIndicator.SetActive(false); //turn off playIndicator when the tooltip is deactivated - Arvin
             }
             if (textObject != null)
             {
@@ -128,7 +127,7 @@ public class DigitalTooltip : InteractableObject
             }
             if (audioSource != null && interactClip != null)
             {
-                audioSource.Stop(); //I added this
+                audioSource.Stop(); //stops the audio from playing when the tooltip is deactivated - Arvin
                 audioSource.PlayOneShot(interactClip);
             }
 
